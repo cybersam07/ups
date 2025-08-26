@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Parcel Tracking</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --brand: #ffb000;
+      --success: #16a34a;
+      --border: #e5e7eb;
+      --link: #0ea5e9;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.45;
+    }
+
+    /* Top App Bar */
+    .appbar { position: sticky; top: 0; z-index: 10; background: #fff; border-bottom: 1px solid var(--border); }
+    .appbar-inner {
+      max-width: 980px; margin: 0 auto; padding: 12px 16px;
+      display: grid; grid-template-columns: auto 1fr auto auto auto;
+      gap: 12px; align-items: center;
+    }
+    .logo { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; font-weight: 700; }
+    .logo img { display: block; height: 36px; width: auto; }
+    .icon-btn {
+      width: 36px; height: 36px; border-radius: 999px;
+      display: grid; place-items: center;
+      background: #fff; border: 1px solid var(--border);
+      cursor: pointer;
+    }
+
+    /* Page */
+    .page { max-width: 980px; margin: 18px auto 64px; padding: 0 16px; }
+    .card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+      padding: 18px;
+    }
+    .subtle { color: var(--muted); font-size: 14px; }
+    .shipment-id {
+      font-family: monospace; font-size: 14px; padding: 4px 8px;
+      border-radius: 6px; background: #f3f4f6; display: inline-block; margin-top: 4px;
+    }
+    .est { margin: 14px 0 6px; font-size: 14px; color: var(--muted); }
+    .eta { font-size: 22px; font-weight: 800; color: #0f766e; }
+    .inline-note { display:inline-flex; align-items:center; gap:8px; color: var(--muted); font-size: 14px; }
+    .inline-note a { color: var(--link); text-decoration: none; }
+    .inline-note a:hover { text-decoration: underline; }
+
+    /* Progress */
+    .progress { display: grid; grid-template-columns: 28px 1fr; gap: 12px; margin-top: 18px; }
+    .trackline { grid-column: 1; display: flex; flex-direction: column; align-items: center; }
+    .trackline:before, .trackline:after { content: ""; width: 2px; background: #d1d5db; flex: 1; }
+    .dot { width: 28px; height: 28px; border-radius: 999px; display: grid; place-items: center; border: 2px solid #d1d5db; background:#fff; }
+    .dot.done { background: #ecfdf5; border-color: var(--success); color: var(--success); }
+    .dot.active { background: #f0f9ff; border-color: #38bdf8; color: #0284c7; }
+    .steps { grid-column: 2; display: grid; gap: 18px; }
+    .step { display: flex; align-items: center; gap: 12px; }
+    .step .title { font-weight: 700; }
+    .step .meta { color: var(--muted); font-size: 14px; }
+
+    /* Timeline */
+    .timeline { position: relative; padding-left: 10px; }
+    .timeline:before { content: ""; position: absolute; left: -23px; top: 14px; bottom: 14px; width: 2px; background: #e5e7eb; }
+    .timeline-item { display: grid; grid-template-columns: 28px 1fr; gap: 12px; align-items: start; }
+
+    .row { display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
+
+    .actions { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 10px; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 14px; border-radius: 10px;
+      border: 1px solid var(--border); background: #fff;
+      color: var(--text); font-weight: 600; cursor: pointer; text-decoration: none;
+    }
+    .btn.primary { background: #111827; color: #fff; border-color: #111827; }
+
+    /* Input Page */
+    .center-page {
+      display: flex; justify-content: center; align-items: center;
+      height: calc(100vh - 64px);
+    }
+    #inputPage { display: block; }
+    #trackingPage { display: none; }
+    input[type="text"] { width: 100%; padding: 10px; margin: 12px 0; border-radius: 6px; border: 1px solid var(--border); }
+    .error-message { color: red; font-size: 14px; display: none; }
+
+    /* Footer */
+    footer { color: var(--muted); font-size: 12px; text-align:center; margin-top: 32px; }
+
+    @media (min-width: 680px) {
+      .grid-2 { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="appbar" role="banner">
+    <div class="appbar-inner">
+      <a class="logo" href="#" aria-label="Home">
+        <img src="https://www.citypng.com/public/uploads/preview/ups-delivery-company-logo-symbol-hd-png-701751694777602klzxvtwtqk.png" alt="Parcel Logo" />
+        <span>Parcel</span>
+      </a>
+      <div></div>
+      <button class="icon-btn" aria-label="Search">🔍</button>
+      <button class="icon-btn" aria-label="Account">👤</button>
+      <button class="icon-btn" aria-label="Menu">☰</button>
+    </div>
+  </header>
+
+  <main class="page" role="main">
+    <!-- Tracking Input Page -->
+    <div id="inputPage" class="center-page">
+      <div class="card">
+        <h1>Track Your Shipment</h1>
+        <input type="text" id="trackingInput" placeholder="Enter Tracking ID" />
+        <div id="errorMsg" class="error-message">Invalid Tracking ID. Please enter the correct ID.</div>
+        <button onclick="showTracking()">Track</button>
+      </div>
+    </div>
+
+    <!-- Tracking Details Page -->
+    <div id="trackingPage">
+      <div class="card grid-2">
+        <section>
+          <div class="subtle">Your shipment</div>
+          <div class="shipment-id" id="shipmentId">--</div>
+
+          <div class="est">Estimated delivery</div>
+          <div class="eta" id="eta">--</div>
+
+          <div class="inline-note">
+            ⏰ View delivery time window and more with <strong>My Choice™</strong>. <a href="#">Continue</a>
+          </div>
+
+          <div class="progress" id="progressSteps">
+            <!-- Progress steps generated dynamically -->
+          </div>
+
+          <div class="actions">
+            <a class="btn" href="#">View Details</a>
+            <a class="btn" href="#">Change Delivery</a>
+            <a class="btn primary" href="#">Notify Me</a>
+          </div>
+        </section>
+
+        <aside>
+          <div class="subtle">Shipment summary</div>
+          <div class="card" style="padding:12px; margin-top:8px;" id="shipmentSummary">
+            <!-- Summary generated dynamically -->
+          </div>
+
+          <div class="subtle" style="margin-top:16px;">Latest activity</div>
+          <div class="timeline card" style="padding:12px; margin-top:8px;" id="shipmentTimeline">
+            <!-- Timeline generated dynamically -->
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <footer>© 2025 Parcel Tracking UI Demo</footer>
+  </main>
+
+  <script>
+    // Sample data simulation
+    const mockShipments = {
+      "1Z12345E": {
+        eta: "Tomorrow, Aug 26 by 5:00 P.M.",
+        summary: [
+          { label: "Status", value: "In Transit" },
+          { label: "Service", value: "Ground" },
+          { label: "Weight", value: "2.5 lbs" },
+          { label: "From", value: "New York, NY" },
+          { label: "To", value: "Los Angeles, CA" }
+        ],
+        progress: ["Label Created", "We Have Your Package", "On the Way", "Out for Delivery", "Delivery"],
+        currentStep: 2,
+        timeline: [
+          { title: "Departed Facility", meta: "Philadelphia, PA • Today 10:00 AM", done: true },
+          { title: "Arrived at Facility", meta: "Philadelphia, PA • Today 7:30 AM", done: true },
+          { title: "Origin Scan", meta: "New York, NY • Yesterday 3:22 PM", done: true }
+        ]
+      }
+    };
+
+    const trackingInput = document.getElementById('trackingInput');
+    const errorMsg = document.getElementById('errorMsg');
+
+    trackingInput.addEventListener('input', () => {
+      const value = trackingInput.value.trim();
+      errorMsg.style.display = value && !mockShipments[value] ? 'block' : 'none';
+    });
+
+    function showTracking() {
+      const id = trackingInput.value.trim();
+      if (!id || !mockShipments[id]) {
+        errorMsg.style.display = 'block';
+        return;
+      }
+
+      const data = mockShipments[id];
+
+      // Update shipment info
+      document.getElementById('shipmentId').textContent = id;
+      document.getElementById('eta').textContent = data.eta;
+
+      // Update summary
+      const summaryDiv = document.getElementById('shipmentSummary');
+      summaryDiv.innerHTML = "";
+      data.summary.forEach(item => {
+        const row = document.createElement('div');
+        row.className = "row";
+        row.innerHTML = `<strong>${item.label}:</strong><span class="meta">${item.value}</span>`;
+        summaryDiv.appendChild(row);
+      });
+
+      // Update progress steps
+      const progressDiv = document.getElementById('progressSteps');
+      progressDiv.innerHTML = `
+        <div class="trackline">
+          ${data.progress.map((_, i) => `<div class="dot ${i < data.currentStep ? 'done' : (i === data.currentStep ? 'active' : '')}">${i < data.currentStep ? '✔' : i === data.currentStep ? '●' : ''}</div>`).join('')}
+        </div>
+        <div class="steps">
+          ${data.progress.map(step => `<div class="step"><span class="title">${step}</span></div>`).join('')}
+        </div>
+      `;
+
+      // Update timeline
+      const timelineDiv = document.getElementById('shipmentTimeline');
+      timelineDiv.innerHTML = "";
+      data.timeline.forEach(item => {
+        const tItem = document.createElement('div');
+        tItem.className = "timeline-item";
+        tItem.innerHTML = `<div class="dot ${item.done ? 'done' : ''}"></div>
+                           <div>
+                             <div class="title">${item.title}</div>
+                             <div class="meta">${item.meta}</div>
+                           </div>`;
+        timelineDiv.appendChild(tItem);
+      });
+
+      // Switch pages
+      document.getElementById('inputPage').style.display = 'none';
+      document.getElementById('trackingPage').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
